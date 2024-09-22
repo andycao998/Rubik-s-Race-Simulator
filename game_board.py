@@ -15,12 +15,12 @@ class GameBoard:
         self.solution_width = 200
         self.solution_height = 200
         self.tile_size = 100
-        self.solution_size = 60
+        self.solution_size = 60 # Solution board displayed in smaller space above game board: shrink tiles slightly
 
-        self.num_grid_tiles = 24
-        self.num_solution_tiles = 9
+        self.num_grid_tiles = 24 # 5x5 - 1 for empty space
+        self.num_solution_tiles = 9 # 3x3 with no empty
 
-        self.score = 0
+        self.score = 0 # Num moves
 
         self.tiles = []
         self.tile_colors = []
@@ -90,18 +90,12 @@ class GameBoard:
         return self.score_surface
 
     def get_tiles(self):
-        # tiles_copy = []
-        # tiles_copy.extend(self.tiles)
-        # return tiles_copy
         return self.tiles
 
     def get_tile_colors(self):
         return self.tile_colors
 
     def get_solutions(self):
-        # solutions_copy = []
-        # solutions_copy.extend(self.solutions)
-        # return solutions_copy
         return self.solutions
 
     def get_solution_colors(self):
@@ -121,7 +115,7 @@ class GameBoard:
 
         while generated < count:
             surface = pygame.Surface((size, size))
-            surface.fill('Black')
+            surface.fill('Black') # Initially black before selecting colors
             list.append(surface)
             generated += 1
 
@@ -143,10 +137,9 @@ class GameBoard:
                 index += 1
 
     def generate_solutions(self):
-        self.create_surfaces(10, self.solution_size, self.solutions)
+        self.create_surfaces(10, self.solution_size, self.solutions) # Generates 9 tiles (< 10)
 
     def update_solutions(self):
-        #width = solution_surface.get_width()
         index = 0
         distance = 65
         horizontal_offset = 601
@@ -174,8 +167,6 @@ class GameBoard:
 
     def choose_color(self):
         available_colors = [i + 1 for i in range(6) if self.color_counts[i] < 4] # List of available colors and their maximum counts
-        # print(f"Available colors: {available_colors}")
-        # print(f"Color counts: {self.color_counts}")
 
         if not available_colors:
             raise ValueError('No available colors left to choose from')
@@ -203,7 +194,6 @@ class GameBoard:
                 if count == self.num_grid_tiles:
                     break
         self.tile_colors.append(0)
-        # print(self.tile_colors)
 
     def randomize_solution(self):
         self.color_counts = [0, 0, 0, 0, 0, 0]
@@ -215,8 +205,8 @@ class GameBoard:
             count += 1
             if count == self.num_solution_tiles:
                 break
-        # print(self.solution_colors)
 
+    # Currently unused; meant for user input
     def swap_tiles(self, pos1, pos2):
         temp = self.tiles[pos1]
         temp_color = self.tile_colors[pos1]
@@ -228,19 +218,21 @@ class GameBoard:
     def find_empty_tile(self):
         return self.tiles.index('EMPTY')
 
+    # Currently unused; meant for user input
     def move_tile(self, tile_index):
         empty_index = self.find_empty_tile()
-        # Define valid moves
+
         valid_moves = {
             empty_index - 1: empty_index % 5 != 0,  # Left move is valid if not on the left edge
             empty_index + 1: empty_index % 5 != 4,  # Right move is valid if not on the right edge
             empty_index - 5: empty_index >= 5,      # Up move is valid if not on the top edge
-            empty_index + 5: empty_index < 20      # Down move is valid if not on the bottom edge
+            empty_index + 5: empty_index < 20       # Down move is valid if not on the bottom edge
         }
 
         if tile_index in valid_moves and valid_moves[tile_index]:
             self.swap_tiles(tile_index, empty_index)
 
+    # Currently unused; meant for user input
     def check_answers(self):
         answer_positions = [6, 7, 8, 11, 12, 13, 16, 17, 18]
         index = 0
@@ -250,10 +242,7 @@ class GameBoard:
         for solution in self.solutions:
             if self.tiles[answer] == 'EMPTY':
                 continue
-            #print(f"self.tiles[answer].get_at((0, 0)): {self.tiles[answer].get_at((0, 0))}")
-            #print(f"solution.get_at((0, 0)): {solution.get_at((0, 0))}")
-            if self.tiles[answer].get_at((0, 0)) == solution.get_at((0, 0)):
-                #print(num_correct)
+            if self.tiles[answer].get_at((0, 0)) == solution.get_at((0, 0)): # Compares colors of center tiles and solution tiles
                 num_correct += 1
 
         return num_correct

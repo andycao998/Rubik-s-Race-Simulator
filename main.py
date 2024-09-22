@@ -10,11 +10,12 @@ def render_screen(game_board, screen, width):
     screen.blit(game_board.get_answer_surface(), ((width / 2) - 180, 395))
     screen.blit(game_board.get_solution_surface(), ((width / 2) - 100, 50))
 
+# Converts 1D array of tiles into 2D array
 def convert(list, size):
     final_list = []
     count = 0
     
-    for j in range(size):
+    for j in range(size): # Size either 5x5 for game board or 3x3 for solution board
         new_list = []
         for i in range(size):
             new_list.append(list[count])
@@ -24,30 +25,30 @@ def convert(list, size):
     return final_list
 
 def display_path(game_board, path, screen, width):
-    if path != None:
-        for state in path:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    return
-            game_board.render_board(state.board.grid)
-            print(state.board.grid)
-            render_screen(game_board, screen, width)
-
-            game_board.increment_score()
-            game_board.update_tiles()
-            game_board.update_solutions()
-            game_board.update_score()
-            
-            pygame.display.update()
-            pygame.time.delay(150)
-    else:
+    if path == None:
         print('No solution')
+        return False
 
-    time.sleep(5)
+    for state in path:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+        game_board.render_board(state.board.grid)
+        print(state.board.grid)
+        render_screen(game_board, screen, width)
+
+        game_board.increment_score()
+        game_board.update_tiles()
+        game_board.update_solutions()
+        game_board.update_score()
+        
+        pygame.display.update()
+        pygame.time.delay(150) # Slight delay to see each tile moving
+
+    time.sleep(5) # 5 second wait before loading next board
     return True
-    #display_board(game_board, screen, width)
-    #print('finish')
 
 def display_board(game_board):
     game_board.initialize_game()
@@ -64,7 +65,7 @@ def display_board(game_board):
     game_board.update_score()
     
     pygame.display.update()
-    game = GamePathfinder(start_state, goal_state, (4, 4))
+    game = GamePathfinder(start_state, goal_state, (4, 4)) # Empty tile starts at row 5 col 5
     path = game.run()
 
     return display_path(game_board, path, screen, width)
@@ -78,85 +79,13 @@ def main():
     screen = game_board.get_screen()
 
     continue_running = display_board(game_board)
-
-    # def moveUp():
-    #     invalid_positions = [20, 21, 22, 23, 24]
-    #     empty_position = tiles.index('EMPTY')
-
-    #     if empty_position not in invalid_positions:
-    #         game_board.incrementScore()
-    #         swap_position = empty_position + 5
-    #         game_board.swapTiles(empty_position, swap_position)
-    #         checkWin()
-
-    # def moveDown():
-    #     invalid_positions = [0, 1, 2, 3, 4]
-    #     empty_position = tiles.index('EMPTY')
-
-    #     if empty_position not in invalid_positions:
-    #         game_board.incrementScore()
-    #         swap_position = empty_position - 5
-    #         game_board.swapTiles(empty_position, swap_position)
-    #         checkWin()
-
-    # def moveLeft():
-    #     invalid_positions = [4, 9, 14, 19, 24]
-    #     empty_position = tiles.index('EMPTY')
-
-    #     if empty_position not in invalid_positions:
-    #         game_board.incrementScore()
-    #         swap_position = empty_position + 1
-    #         game_board.swapTiles(empty_position, swap_position)
-    #         checkWin()
-
-    # def moveRight():
-    #     invalid_positions = [0, 5, 10, 15, 20]
-    #     empty_position = tiles.index('EMPTY')
-
-    #     if empty_position not in invalid_positions:
-    #         game_board.incrementScore()
-    #         swap_position = empty_position - 1
-    #         game_board.swapTiles(empty_position, swap_position)
-    #         checkWin()
-
-    # def checkWin():
-    #     print(game_board.getTileColors())
-    #     if checkAnswer():
-    #         print('YOU WIN')
-
-    # def checkAnswer():
-    #     answer_positions = [6, 7, 8, 11, 12, 13, 16, 17, 18]
-    #     index = 0
-    #     answer = answer_positions[index]
-
-    #     for solution in solutions:
-    #         if solution == 'EMPTY' or tiles[answer] == 'EMPTY':
-    #             return False
-    #         if tiles[answer].get_at((0, 0)) != solution.get_at((0, 0)):
-    #             return False
-
-    #         index += 1
-    #         if index >= len(answer_positions):
-    #             break
-    #         answer = answer_positions[index]
-
-    #     return True
+    
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
-
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_UP:
-            #         moveUp()
-            #     elif event.key == pygame.K_DOWN:
-            #         moveDown()
-            #     elif event.key == pygame.K_LEFT:
-            #         moveLeft()
-            #     elif event.key == pygame.K_RIGHT:
-            #         moveRight()
+                exit()     
                 
         render_screen(game_board, screen, width)
         
@@ -167,6 +96,7 @@ def main():
         pygame.display.update()
         clock.tick(60)
 
+        # Stop solving boards if algorithm unable to find a solution to a board
         if continue_running:
             continue_running = False
             continue_running = display_board(game_board)
