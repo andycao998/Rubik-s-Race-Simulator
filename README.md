@@ -1,6 +1,8 @@
 # Rubik's Race Simulator
 Solves random Rubik's Race boards using weighted A* search
 
+![RubiksRace](https://github.com/user-attachments/assets/0981afb1-d4b7-4fde-a986-744f6ee370cf)
+
 ## Description
 
 This project is a Rubik's Race simulator that generates and solves randomly generated boards repeatedly. It uses weighted A* to find a solution quickly. The path the algorithm took is displayed on a Pygame window.
